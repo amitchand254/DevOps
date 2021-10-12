@@ -101,11 +101,3 @@ kubectl describe svc kubernetes (its default clusterIP service of kubernetes)
 kubectl expose deployment <deployment_name> --name=<service_name> --taerget-port=8080 --type=NodePort --port=8080 --dry-run=client -o yaml > svc.yml (update the nodePort value in svc.yml file)
 
 kubectl apply -f svc.yml
-
-
-
-
-
-
-
-
