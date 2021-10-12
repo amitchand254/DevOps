@@ -1,0 +1,111 @@
+###########Kubernetes################
+kubectl run hello-minikube
+kubectl get nodes
+kubectl cluster-info
+kubectl get all (shows deployments,replicaset & pods)
+##pods
+Pods are the smallest deployable units of computing that you can create and manage in Kubernetes.
+kubectl version (shows client and server version)
+kubectl run <pod_name> --image=<image_name>
+kubectl run nginx --image=nginx
+kubectl get pods
+kubectl describe pod <pod_name>
+kubectl describe pod nginx
+kubectl get all
+kubectl get pods -o wide
+kubectl create -f pod.yaml
+kubectl apply -f pod.yaml
+kubectl describe pod nginx | grep image
+kubectl delete pod nginx
+kubectl run redis --image=redis --dry-run=client -o yaml > pod.xml
+kubectl logs <pod_name>
+kubectl logs nginx 
+kubectl logs nginx --follow --tail 1
+kubectl get pods -w (to see temination or creation of pods at realtime)
+
+
+##replicaset
+A ReplicaSet's purpose is to maintain a stable set of replica Pods running at any given time.
+
+kubetctl create -f replicaset-definition.yaml 
+kubetctl apply -f replicaset-definition.yaml (we can use both create or apply to create replicaset)
+kubectl get replicaset
+kubectl get pods
+kubectl edit replicaset <replicaset_name>
+kubectl scale replicaset <replicaset_name> --replica=4
+kubectl describe replicaset <replicaset_name>
+kubectl delete pod <pod_name> (replicaset will create new pod of same label which we have deleted)
+kubectl delete replicaset <replicaset_name>
+
+##Kubernetes deployments:
+Its top in the Kubernetes objects hhierarchy (pods ->replicaset-> deployments)
+deployments yaml file is quite similar to replicaset yaml the difference is kind: deployment
+
+kubectl create -f deployments-definition.yaml
+kubectl get deployments
+kubectl get replicaset
+kubectl get pods
+kubectl get all
+kubectl describe pod <pod-name> (to check errors in event section)
+
+####create a deploymnet (name=httpd-frontend, replicas=3 & image= httpd:2.4-alpine)
+kubectl create deployment <deployment_name> --image=<image_name>
+kubectl create deployment httpd-frontend --image=httpd:2.4-alpine
+kubectl scale deploymet httpd-frontend --replicas=3
+kubectl get deployments <httpd-frontend>
+###############
+
+##deploymet rollout(update) and rollback
+types of rollout(update) -
+1)recreate (deletes the all application instances first & then creates the new instances - need down time)
+2)rolling update (take down the older version & bring up the newer version one by one --> No down time & its default deployment strategy)
+
+kubectl create -f deployment.yaml (to create new deployment )
+kubectl create -f deployment.yaml --record (--record instruct to the kubernetes to record the cause of changes & you can check this in rollout history command)
+kubectl rollout history Deployment/<deployment_name>
+kubectl edit deployment <deployment_name> --record (search the image version and edit eg- nginx:1.18 - this is one way to rollout the changes)
+kubectl roll status deployment <deployment_name>
+kubectl set image Deployment/<deployment_name> <container_name>=<image> --record
+kubectl set image Deployment/<deployment_name> ngnix=nginx:1.18-perl
+kubectl rollout status Deployment/<deployment_name>
+kubetctl rollout history Deployment/<deployment_name>
+kubectl rollout undo Deployment/<deployment_name>
+kubetctl rollout history Deployment/<deployment_name>
+
+kubectl get deployments
+kubectl apply -f deployment.yaml (update the yaml file and exeecute this eg: image version)
+kubectl set image Deployment/<deployment_name> nginx=nginx:1.18 (update the image name)
+kubectl rollout status Deployment/<deployment_name> (check the status of rollout)
+kubectl rollout history Deployment/<deployment_name> (check the history of rollout)
+kubectl rollout undo Deployment/<deployment_name>  (rollback the changes)
+
+##Kubernetes Networking
+In docker IP is assigned to docker container but in kubernetes IP is assined to a pod.
+Each kubernetes pod gets its own IP
+All container/Pods can communicate to one another without NAT
+All nodes can communicate with all containers and vice versa without NAT.
+Prebuild n/w solutions: CISCO, NSX etc
+
+
+##Kubernetes services:
+NodePort:
+ClusterIP:
+LoadBalancer
+
+kubectl get svc
+kubectl create -f service_NodePort.yml
+kubectl create -f service_ClusterIP.yml
+kubectl describe svc <service_name>
+kubectl describe svc kubernetes (its default clusterIP service of kubernetes)
+
+kubectl expose deployment <deployment_name> --name=<service_name> --taerget-port=8080 --type=NodePort --port=8080 --dry-run=client -o yaml > svc.yml (update the nodePort value in svc.yml file)
+
+kubectl apply -f svc.yml
+
+
+
+
+
+
+
+
